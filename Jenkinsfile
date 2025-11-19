@@ -2,10 +2,6 @@ pipeline {
     agent any
     
     environment {
-        // Python Configuration - Update path based on your Jenkins server
-        PYTHON_HOME = 'C:\\Python314'  // Windows path, change for Linux/Mac
-        PATH = "${PYTHON_HOME};${PYTHON_HOME}\\Scripts;${PATH}"
-        
         // Test Configuration
         HEADLESS = 'true'
         VIEWPORT_WIDTH = '1280'
@@ -42,9 +38,80 @@ pipeline {
                     } else {
                         bat '''
                             echo Setting up virtual environment (Windows)...
-                            if not exist venv (
-                                python -m venv venv
+                            echo Checking Python installation...
+                            
+                            REM Try py launcher first (Windows Python Launcher)
+                            py --version >nul 2>&1
+                            if %ERRORLEVEL% EQU 0 (
+                                echo Found Python via py launcher
+                                py -3 -m venv venv
+                                goto :venv_created
                             )
+                            
+                            REM Try python command
+                            python --version >nul 2>&1
+                            if %ERRORLEVEL% EQU 0 (
+                                echo Found Python via python command
+                                python -m venv venv
+                                goto :venv_created
+                            )
+                            
+                            REM Try common installation paths
+                            if exist "C:\\Python314\\python.exe" (
+                                echo Found Python at C:\\Python314\\python.exe
+                                C:\\Python314\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python313\\python.exe" (
+                                echo Found Python at C:\\Python313\\python.exe
+                                C:\\Python313\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python312\\python.exe" (
+                                echo Found Python at C:\\Python312\\python.exe
+                                C:\\Python312\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python311\\python.exe" (
+                                echo Found Python at C:\\Python311\\python.exe
+                                C:\\Python311\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python310\\python.exe" (
+                                echo Found Python at C:\\Python310\\python.exe
+                                C:\\Python310\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python39\\python.exe" (
+                                echo Found Python at C:\\Python39\\python.exe
+                                C:\\Python39\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Python38\\python.exe" (
+                                echo Found Python at C:\\Python38\\python.exe
+                                C:\\Python38\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Program Files\\Python314\\python.exe" (
+                                echo Found Python at C:\\Program Files\\Python314\\python.exe
+                                "C:\\Program Files\\Python314\\python.exe" -m venv venv
+                                goto :venv_created
+                            )
+                            if exist "C:\\Program Files\\Python313\\python.exe" (
+                                echo Found Python at C:\\Program Files\\Python313\\python.exe
+                                "C:\\Program Files\\Python313\\python.exe" -m venv venv
+                                goto :venv_created
+                            )
+                            
+                            echo ERROR: Python not found!
+                            echo Please ensure Python is installed and either:
+                            echo 1. Add Python to PATH, OR
+                            echo 2. Install Python Launcher (py command), OR
+                            echo 3. Update Jenkinsfile with correct Python path
+                            exit /b 1
+                            
+                            :venv_created
+                            echo Virtual environment created successfully
                         '''
                     }
                 }
@@ -65,8 +132,8 @@ pipeline {
                         bat '''
                             echo Installing Python dependencies...
                             call venv\\Scripts\\activate.bat
-                            pip install --upgrade pip
-                            pip install -r requirements.txt
+                            python -m pip install --upgrade pip
+                            python -m pip install -r requirements.txt
                         '''
                     }
                 }
