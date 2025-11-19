@@ -1,0 +1,20 @@
+Feature: E-commerce Checkout Flow # features/ecommerce_checkout.feature:1
+  As a user
+  I want to complete a purchase flow
+  So that I can buy products from the e-commerce site
+  @smoke @regression
+  Scenario Outline: Complete checkout flow with different user credentials and products -- @1.1   # features/ecommerce_checkout.feature:24
+    Given I navigate to the login page                                                            # steps/checkout_steps.py:10
+    When I login with credentials "Gauravtestuser1@gmail.com" and "Gauravtestuser123"             # steps/checkout_steps.py:17
+    Then I should be successfully logged in                                                       # steps/checkout_steps.py:23
+    When I select product "Gaurav_Bike" and add it to cart                                        # steps/checkout_steps.py:29
+    And I navigate to cart page                                                                   # steps/checkout_steps.py:36
+    And I click on checkout button                                                                # steps/checkout_steps.py:44
+    And I enter "ind" in country textbox                                                          # steps/checkout_steps.py:51
+    And I select "India" from dropdown                                                            # steps/checkout_steps.py:57
+    When I click on Place Order button                                                            # steps/checkout_steps.py:63
+    Then order confirmation page should be displayed                                              # steps/checkout_steps.py:69
+    And I capture the order ID from thank you page                                                # steps/checkout_steps.py:77
+    When I click on Orders link present on top right                                              # steps/checkout_steps.py:86
+    Then the order ID should be present in "Your Orders" table                                    # steps/checkout_steps.py:94
+
