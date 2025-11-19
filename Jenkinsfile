@@ -56,6 +56,20 @@ pipeline {
                                 goto :venv_created
                             )
                             
+                            REM Try User AppData location (common for Windows installations)
+                            if exist "C:\\Users\\Gakumar\\AppData\\Local\\Python\\bin\\python.exe" (
+                                echo Found Python at C:\\Users\\Gakumar\\AppData\\Local\\Python\\bin\\python.exe
+                                C:\\Users\\Gakumar\\AppData\\Local\\Python\\bin\\python.exe -m venv venv
+                                goto :venv_created
+                            )
+                            
+                            REM Try with environment variable for current user
+                            if exist "%LOCALAPPDATA%\\Python\\bin\\python.exe" (
+                                echo Found Python at %%LOCALAPPDATA%%\\Python\\bin\\python.exe
+                                "%LOCALAPPDATA%\\Python\\bin\\python.exe" -m venv venv
+                                goto :venv_created
+                            )
+                            
                             REM Try common installation paths
                             if exist "C:\\Python314\\python.exe" (
                                 echo Found Python at C:\\Python314\\python.exe
